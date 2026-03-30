@@ -1,9 +1,6 @@
 {
   "name": "turntable-cdk",
   "version": "0.1.0",
-  "bin": {
-    "turntable-cdk": "bin/turntable-cdk.js"
-  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
