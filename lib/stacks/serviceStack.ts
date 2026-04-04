@@ -51,8 +51,18 @@ export class ServiceStack extends Stack {
       redirectHTTP: true,
     });
 
-    fargateService.listener.addAction('CognitoAuth', {
+    fargateService.targetGroup.configureHealthCheck({
+      path: '/health',
+    });
+
+    fargateService.listener.addAction('HealthCheck', {
       priority: 1,
+      conditions: [ListenerCondition.pathPatterns(['/health'])],
+      action: ListenerAction.forward([fargateService.targetGroup]),
+    });
+
+    fargateService.listener.addAction('CognitoAuth', {
+      priority: 2,
       conditions: [ListenerCondition.pathPatterns(['/*'])],
       action: new AuthenticateCognitoAction({
         userPool: props.userPool,
