@@ -1,17 +1,19 @@
 import * as path from "path";
 import { Stack, StackProps } from "aws-cdk-lib";
-import { ListenerAction, ListenerCondition } from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import { ListenerAction, ListenerCondition, ApplicationProtocol } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { AuthenticateCognitoAction } from "aws-cdk-lib/aws-elasticloadbalancingv2-actions";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { DockerImageAsset } from "aws-cdk-lib/aws-ecr-assets";
 import { Cluster, ContainerImage } from "aws-cdk-lib/aws-ecs";
 import { ApplicationLoadBalancedFargateService } from "aws-cdk-lib/aws-ecs-patterns";
 import { UserPool, UserPoolClient, UserPoolDomain } from "aws-cdk-lib/aws-cognito";
+import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Construct } from "constructs";
 import { Stage } from "../config";
 
 export interface ServiceStackProps extends StackProps {
   stage: Stage;
+  certificateArn: string;
   userPool: UserPool;
   userPoolClient: UserPoolClient;
   userPoolDomain: UserPoolDomain;
@@ -29,6 +31,8 @@ export class ServiceStack extends Stack {
 
     const cluster = new Cluster(this, 'Cluster', { vpc });
 
+    const certificate = Certificate.fromCertificateArn(this, 'Certificate', props.certificateArn);
+
     const fargateService = new ApplicationLoadBalancedFargateService(this, 'FargateService', {
       cluster,
       cpu: 256,
@@ -39,6 +43,9 @@ export class ServiceStack extends Stack {
         containerPort: 8080,
       },
       publicLoadBalancer: true,
+      protocol: ApplicationProtocol.HTTPS,
+      certificate,
+      redirectHTTP: true,
     });
 
     fargateService.listener.addAction('CognitoAuth', {
