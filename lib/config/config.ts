@@ -2,9 +2,11 @@ import { StageConfig } from "./types";
 
 export const STAGE_CONFIGS: StageConfig[] = [
   {
-    stage: "Beta"
+    stage: "Beta",
+    domainName: "beta-api.games.jacob.gorton.dev",
   },
   {
-    stage: "Prod"
+    stage: "Prod",
+    domainName: "api.games.jacob.gorton.dev",
   },
 ]

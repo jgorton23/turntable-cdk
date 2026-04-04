@@ -7,13 +7,13 @@ import { DockerImageAsset } from "aws-cdk-lib/aws-ecr-assets";
 import { Cluster, ContainerImage } from "aws-cdk-lib/aws-ecs";
 import { ApplicationLoadBalancedFargateService } from "aws-cdk-lib/aws-ecs-patterns";
 import { UserPool, UserPoolClient, UserPoolDomain } from "aws-cdk-lib/aws-cognito";
-import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
+import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
 import { Construct } from "constructs";
 import { Stage } from "../config";
 
 export interface ServiceStackProps extends StackProps {
   stage: Stage;
-  certificateArn: string;
+  domainName: string;
   userPool: UserPool;
   userPoolClient: UserPoolClient;
   userPoolDomain: UserPoolDomain;
@@ -31,7 +31,10 @@ export class ServiceStack extends Stack {
 
     const cluster = new Cluster(this, 'Cluster', { vpc });
 
-    const certificate = Certificate.fromCertificateArn(this, 'Certificate', props.certificateArn);
+    const certificate = new Certificate(this, 'Certificate', {
+      domainName: props.domainName,
+      validation: CertificateValidation.fromDns(),
+    });
 
     const fargateService = new ApplicationLoadBalancedFargateService(this, 'FargateService', {
       cluster,

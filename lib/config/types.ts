@@ -14,7 +14,7 @@ export interface GoogleIdPConfig {
 
 export interface StageConfig {
   stage: Stage;
-  certificateArn?: string;
+  domainName: string;
   apple?: AppleIdPConfig;
   google?: GoogleIdPConfig;
   stageProps?: {}

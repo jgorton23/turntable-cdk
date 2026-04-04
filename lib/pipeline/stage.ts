@@ -5,6 +5,7 @@ import { CognitoStack, ServiceStack } from '../stacks';
 
 export interface TurnTableStageProps extends StageProps {
   stage: StageName;
+  domainName: string;
   idpConfig?: {
     apple?: AppleIdPConfig;
     google?: GoogleIdPConfig;
@@ -22,6 +23,7 @@ export class TurnTableStage extends Stage {
 
     new ServiceStack(this, 'ServiceStack', {
       stage: props.stage,
+      domainName: props.domainName,
       userPool: cognito.userPool,
       userPoolClient: cognito.userPoolClient,
       userPoolDomain: cognito.userPoolDomain,

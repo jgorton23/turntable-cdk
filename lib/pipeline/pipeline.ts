@@ -24,6 +24,7 @@ export class TurnTablePipeline extends Stack {
     STAGE_CONFIGS.forEach(config => {
       pipeline.addStage(new TurnTableStage(this, config.stage, {
         stage: config.stage,
+        domainName: config.domainName,
         ...config.stageProps,
       }));
     });
