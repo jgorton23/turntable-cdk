@@ -18,6 +18,7 @@ export class TurnTableStage extends Stage {
 
     const cognito = new CognitoStack(this, 'CognitoStack', {
       stage: props.stage,
+      domainName: props.domainName,
       idpConfig: props.idpConfig,
     });
 

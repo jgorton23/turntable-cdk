@@ -13,6 +13,7 @@ import { AppleIdPConfig, GoogleIdPConfig, Stage } from "../config";
 
 export interface CognitoStackProps extends StackProps {
   stage: Stage;
+  domainName: string;
   idpConfig?: {
     apple?: AppleIdPConfig;
     google?: GoogleIdPConfig;
@@ -78,8 +79,8 @@ export class CognitoStack extends Stack {
       oAuth: {
         flows: { authorizationCodeGrant: true },
         scopes: [OAuthScope.EMAIL, OAuthScope.OPENID, OAuthScope.PROFILE],
-        callbackUrls: [`https://turntable-${props.stage.toLowerCase()}.auth.us-east-1.amazoncognito.com/oauth2/idpresponse`],
-        logoutUrls: [`https://turntable-${props.stage.toLowerCase()}.auth.us-east-1.amazoncognito.com/logout`],
+        callbackUrls: [`https://${props.domainName}/oauth2/idpresponse`],
+        logoutUrls: [`https://${props.domainName}/logout`],
       },
     });
 
@@ -93,8 +94,8 @@ export class CognitoStack extends Stack {
       oAuth: {
         flows: { authorizationCodeGrant: true },
         scopes: [OAuthScope.EMAIL, OAuthScope.OPENID, OAuthScope.PROFILE],
-        callbackUrls: [`https://turntable-${props.stage.toLowerCase()}.auth.us-east-1.amazoncognito.com/oauth2/idpresponse`],
-        logoutUrls: [`https://turntable-${props.stage.toLowerCase()}.auth.us-east-1.amazoncognito.com/logout`],
+        callbackUrls: [`https://${props.domainName}/oauth2/idpresponse`],
+        logoutUrls: [`https://${props.domainName}/logout`],
       },
     });
 
