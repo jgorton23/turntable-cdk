@@ -32,10 +32,6 @@ export class CognitoStack extends Stack {
       userPoolName: `turntable-${props.stage.toLowerCase()}`,
       selfSignUpEnabled: true,
       signInAliases: { email: true },
-      standardAttributes: {
-        email: { required: true, mutable: true },
-        fullname: { required: true, mutable: true },
-      },
     });
 
     const supportedProviders = [];
