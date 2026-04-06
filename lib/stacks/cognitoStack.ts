@@ -31,7 +31,7 @@ export class CognitoStack extends Stack {
     this.userPool = new UserPool(this, 'UserPool', {
       userPoolName: `turntable-${props.stage.toLowerCase()}`,
       selfSignUpEnabled: true,
-      signInAliases: { username: true, email: true },
+      signInAliases: { email: true },
       standardAttributes: {
         email: { required: true, mutable: true },
         fullname: { required: true, mutable: true },
