@@ -8,6 +8,7 @@ import { Cluster, ContainerImage } from "aws-cdk-lib/aws-ecs";
 import { ApplicationLoadBalancedFargateService } from "aws-cdk-lib/aws-ecs-patterns";
 import { UserPool, UserPoolClient, UserPoolDomain } from "aws-cdk-lib/aws-cognito";
 import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
+import { Table } from "aws-cdk-lib/aws-dynamodb";
 import { Construct } from "constructs";
 import { Stage } from "../config";
 
@@ -17,6 +18,12 @@ export interface ServiceStackProps extends StackProps {
   userPool: UserPool;
   userPoolClient: UserPoolClient;
   userPoolDomain: UserPoolDomain;
+  usersTable: Table;
+  friendsTable: Table;
+  gamesTable: Table;
+  playerGamesTable: Table;
+  movesTable: Table;
+  chatTable: Table;
 }
 
 export class ServiceStack extends Stack {
@@ -44,12 +51,31 @@ export class ServiceStack extends Stack {
       taskImageOptions: {
         image: ContainerImage.fromDockerImageAsset(image),
         containerPort: 8080,
+        environment: {
+          AWS_REGION: this.region,
+          USERS_TABLE_NAME: props.usersTable.tableName,
+          FRIENDS_TABLE_NAME: props.friendsTable.tableName,
+          GAMES_TABLE_NAME: props.gamesTable.tableName,
+          PLAYER_GAMES_TABLE_NAME: props.playerGamesTable.tableName,
+          MOVES_TABLE_NAME: props.movesTable.tableName,
+          CHAT_TABLE_NAME: props.chatTable.tableName,
+        },
       },
       publicLoadBalancer: true,
       protocol: ApplicationProtocol.HTTPS,
       certificate,
       redirectHTTP: true,
     });
+
+    const tables = [
+      props.usersTable,
+      props.friendsTable,
+      props.gamesTable,
+      props.playerGamesTable,
+      props.movesTable,
+      props.chatTable,
+    ];
+    tables.forEach(table => table.grantReadWriteData(fargateService.taskDefinition.taskRole));
 
     fargateService.targetGroup.configureHealthCheck({
       path: '/health',
