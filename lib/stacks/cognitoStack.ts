@@ -22,6 +22,7 @@ export interface CognitoStackProps extends StackProps {
 export class CognitoStack extends Stack {
   readonly userPool: UserPool;
   readonly userPoolClient: UserPoolClient;
+  readonly mobileUserPoolClient: UserPoolClient;
   readonly userPoolDomain: UserPoolDomain;
 
   constructor(scope: Construct, id: string, props: CognitoStackProps) {
@@ -73,6 +74,21 @@ export class CognitoStack extends Stack {
 
     this.userPoolClient = this.userPool.addClient('AppClient', {
       generateSecret: true,
+      authFlows: {
+        userPassword: true,
+        userSrp: true,
+      },
+      supportedIdentityProviders: supportedProviders,
+      oAuth: {
+        flows: { authorizationCodeGrant: true },
+        scopes: [OAuthScope.EMAIL, OAuthScope.OPENID, OAuthScope.PROFILE],
+        callbackUrls: [`https://turntable-${props.stage.toLowerCase()}.auth.us-east-1.amazoncognito.com/oauth2/idpresponse`],
+        logoutUrls: [`https://turntable-${props.stage.toLowerCase()}.auth.us-east-1.amazoncognito.com/logout`],
+      },
+    });
+
+    this.mobileUserPoolClient = this.userPool.addClient('MobileAppClient', {
+      generateSecret: false,
       authFlows: {
         userPassword: true,
         userSrp: true,
