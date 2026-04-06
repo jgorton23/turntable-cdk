@@ -29,8 +29,12 @@ export class CognitoStack extends Stack {
 
     this.userPool = new UserPool(this, 'UserPool', {
       userPoolName: `turntable-${props.stage.toLowerCase()}`,
-      selfSignUpEnabled: false,
-      signInAliases: { email: true },
+      selfSignUpEnabled: true,
+      signInAliases: { username: true, email: true },
+      standardAttributes: {
+        email: { required: true, mutable: true },
+        fullname: { required: true, mutable: true },
+      },
     });
 
     const supportedProviders = [];
@@ -69,6 +73,10 @@ export class CognitoStack extends Stack {
 
     this.userPoolClient = this.userPool.addClient('AppClient', {
       generateSecret: true,
+      authFlows: {
+        userPassword: true,
+        userSrp: true,
+      },
       supportedIdentityProviders: supportedProviders,
       oAuth: {
         flows: { authorizationCodeGrant: true },
